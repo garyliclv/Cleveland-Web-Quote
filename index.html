@@ -96,7 +96,7 @@ body{font-family:'Poppins',sans-serif;background:var(--off-white);color:var(--te
 .ks-add-btn:hover,.ks-result.selected .ks-add-btn{background:var(--red)}
 .ks-view-btn{padding:7px 10px;border:1.5px solid var(--border);border-radius:6px;font-size:10px;font-weight:600;color:var(--charcoal);background:var(--white);text-decoration:none;display:inline-block;transition:all .15s;white-space:nowrap}
 .ks-view-btn:hover{border-color:var(--red);color:var(--red)}
-.ks-results-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:4px}
+.ks-results-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:4px;max-height:564px;overflow-y:auto;padding-right:4px}
 .ks-no-match{text-align:center;padding:32px 16px;color:var(--muted);font-size:12px}
 .ks-no-match strong{display:block;font-size:14px;color:var(--charcoal-lt);margin-bottom:6px}
 .ks-step.disabled{opacity:.4;pointer-events:none}
@@ -144,6 +144,7 @@ body{font-family:'Poppins',sans-serif;background:var(--off-white);color:var(--te
 .products-empty-txt{font-size:13px;line-height:1.6}
 .products-grid{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:270px;gap:12px;padding:16px;overflow-y:auto;max-height:564px;align-content:start}
 .products-grid::-webkit-scrollbar{width:5px}.products-grid::-webkit-scrollbar-track{background:var(--mid);border-radius:2px}.products-grid::-webkit-scrollbar-thumb{background:var(--red);border-radius:2px}
+.ks-results-grid::-webkit-scrollbar{width:5px}.ks-results-grid::-webkit-scrollbar-track{background:var(--mid);border-radius:2px}.ks-results-grid::-webkit-scrollbar-thumb{background:var(--red);border-radius:2px}
 /* Product card */
 .prod-card{background:var(--white);border:1.5px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:all .18s;position:relative;display:flex;flex-direction:column;height:100%}
 .prod-card:hover{border-color:var(--red);box-shadow:0 6px 24px rgba(200,16,46,.1);transform:translateY(-2px)}
@@ -155,7 +156,7 @@ body{font-family:'Poppins',sans-serif;background:var(--off-white);color:var(--te
 .prod-card:hover .prod-card-img img{transform:scale(1.05)}
 .prod-card-img img{width:100%;height:100%;object-fit:contain;padding:10px;transition:transform .2s}
 .prod-card:hover .prod-card-img img{transform:scale(1.04)}
-.prod-card-body{padding:10px 12px 12px;display:flex;flex-direction:column;gap:8px}
+.prod-card-body{padding:10px 12px 12px;display:flex;flex-direction:column;gap:6px;flex:1}
 .prod-card-name{font-size:12px;font-weight:700;color:var(--charcoal);line-height:1.35}
 .prod-card.selected .prod-card-name{color:var(--red)}
 .prod-card-btn{display:inline-block;text-align:center;padding:6px 10px;background:var(--charcoal);color:#fff;border-radius:6px;font-size:10px;font-weight:600;text-decoration:none;letter-spacing:.04em;text-transform:uppercase;transition:background .15s}
@@ -383,7 +384,7 @@ body{font-family:'Poppins',sans-serif;background:var(--off-white);color:var(--te
                 <div class="tl2-bar"></div><span class="tl2-lbl">Floor Models</span><span class="tl2-ct">12</span>
               </button>
               <button class="tl2-btn" onclick="openSkilletSelector(this,'Braising Pans &amp; Tilt Skillets','Countertop','countertop')">
-                <div class="tl2-bar"></div><span class="tl2-lbl">Countertop</span><span class="tl2-ct">1</span>
+                <div class="tl2-bar"></div><span class="tl2-lbl">Countertop</span><span class="tl2-ct">2</span>
               </button>
             </div>
           </div>
@@ -771,10 +772,20 @@ function _renderSteamerFilter() {
 
     var body = document.createElement('div'); body.className = 'prod-card-body';
     var nm = document.createElement('div'); nm.className = 'prod-card-name'; nm.textContent = p.name; body.appendChild(nm);
-    var lnk = document.createElement('a'); lnk.className = 'prod-card-btn';
-    lnk.href = p.url; lnk.target = '_blank'; lnk.textContent = 'View Product \u2192';
-    lnk.onclick = function(e){ e.stopPropagation(); }; body.appendChild(lnk);
-    card.appendChild(body);
+    var ra1 = document.createElement('div'); ra1.className = 'ks-result-actions';
+    var aBtn = document.createElement('button'); aBtn.className = 'ks-add-btn';
+    aBtn.textContent = sel ? '\u2713 Added to Quote' : '+ Add to Quote';
+    if(sel) aBtn.style.background = 'var(--red)';
+    aBtn.onclick = (function(id){ return function(e){ e.stopPropagation();
+      var i = selectedProducts.indexOf(id);
+      if(i>=0) selectedProducts.splice(i,1); else selectedProducts.push(id);
+      updateSummary(); _renderSteamerFilter();
+    }; })(p.id);
+    ra1.appendChild(aBtn);
+    var lnk = document.createElement('a'); lnk.className = 'ks-view-btn';
+    lnk.href = p.url; lnk.target = '_blank'; lnk.textContent = 'View \u2192';
+    lnk.onclick = function(e){ e.stopPropagation(); }; ra1.appendChild(lnk);
+    body.appendChild(ra1); card.appendChild(body);
 
     card.onclick = (function(id){ return function(){
       var i = selectedProducts.indexOf(id);
@@ -853,10 +864,20 @@ function renderGrid(list) {
 
     var body = document.createElement('div'); body.className = 'prod-card-body';
     var nm = document.createElement('div'); nm.className = 'prod-card-name'; nm.textContent = p.name; body.appendChild(nm);
-    var lnk = document.createElement('a'); lnk.className = 'prod-card-btn';
-    lnk.href = p.url; lnk.target = '_blank'; lnk.textContent = 'View Product \u2192';
-    lnk.onclick = function(e) { e.stopPropagation(); }; body.appendChild(lnk);
-    card.appendChild(body);
+    var ra2 = document.createElement('div'); ra2.className = 'ks-result-actions';
+    var aBtn2 = document.createElement('button'); aBtn2.className = 'ks-add-btn';
+    aBtn2.textContent = sel ? '\u2713 Added to Quote' : '+ Add to Quote';
+    if(sel) aBtn2.style.background = 'var(--red)';
+    aBtn2.onclick = (function(id){ return function(e){ e.stopPropagation();
+      var i = selectedProducts.indexOf(id);
+      if(i>=0) selectedProducts.splice(i,1); else selectedProducts.push(id);
+      updateSummary(); if(currentSubKey) renderGrid(CATALOG[currentSubKey]||[]);
+    }; })(p.id);
+    ra2.appendChild(aBtn2);
+    var lnk = document.createElement('a'); lnk.className = 'ks-view-btn';
+    lnk.href = p.url; lnk.target = '_blank'; lnk.textContent = 'View \u2192';
+    lnk.onclick = function(e){ e.stopPropagation(); }; ra2.appendChild(lnk);
+    body.appendChild(ra2); card.appendChild(body);
 
     card.onclick = (function(id){ return function(){
       var i = selectedProducts.indexOf(id);
@@ -1028,8 +1049,19 @@ function treeSearch(q) {
     imgWrap.appendChild(img); card.appendChild(imgWrap);
     var body=document.createElement('div'); body.className='prod-card-body';
     var nm=document.createElement('div'); nm.className='prod-card-name'; nm.textContent=p.name; body.appendChild(nm);
-    var lnk=document.createElement('a'); lnk.className='prod-card-btn'; lnk.href=p.url; lnk.target='_blank'; lnk.textContent='View Product \u2192';
-    lnk.onclick=function(e){e.stopPropagation();}; body.appendChild(lnk);
+    var ra3=document.createElement('div'); ra3.className='ks-result-actions';
+    var aBtn3=document.createElement('button'); aBtn3.className='ks-add-btn';
+    var isSel=selectedProducts.indexOf(id)>=0;
+    aBtn3.textContent=isSel?'\u2713 Added to Quote':'+ Add to Quote';
+    if(isSel) aBtn3.style.background='var(--red)';
+    aBtn3.onclick=(function(pid){ return function(e){ e.stopPropagation();
+      var i=selectedProducts.indexOf(pid);
+      if(i>=0) selectedProducts.splice(i,1); else selectedProducts.push(pid);
+      updateSummary(); treeSearch(document.querySelector('.tree-search input').value);
+    }; })(id); ra3.appendChild(aBtn3);
+    var lnk=document.createElement('a'); lnk.className='ks-view-btn'; lnk.href=p.url; lnk.target='_blank'; lnk.textContent='View \u2192';
+    lnk.onclick=function(e){e.stopPropagation();}; ra3.appendChild(lnk);
+    body.appendChild(ra3);
     card.appendChild(body);
     card.onclick=(function(pid){ return function(){
       var i=selectedProducts.indexOf(pid);
@@ -1138,6 +1170,7 @@ var SKILLET_DB = {
   ],
   countertop: [
     {energy:'electric', series:'', gal:10, model:'SET10', name:'SET10: Electric Countertop Tilt Skillet', img:'https://www.clevelandrange.com/wp-content/uploads/2025/02/image001-scaled.jpg', url:'https://www.clevelandrange.com/product/set10-electric-tilt-skillet/'},
+    {energy:'electric', series:'', gal:15, model:'SET15', name:'SET15: Electric Countertop Tilt Skillet, 15 gal', img:'https://www.clevelandrange.com/wp-content/uploads/2025/02/set15-braising-pan-tilting-skillet-table-top-updated.jpg', url:'https://www.clevelandrange.com/product/set15-braising-pan-tilting-skillet/'},
   ]
 };
 
@@ -1174,31 +1207,35 @@ function _renderSkilletSelector() {
   var old = document.getElementById('skillet-selector');
   if (old) old.remove();
 
-  // Countertop: single model, show directly
+  // Countertop: show all models directly, no steps
   if (_ssPlacement === 'countertop') {
     var wrap=document.createElement('div'); wrap.id='skillet-selector'; wrap.className='kettle-selector';
-    var k=SKILLET_DB.countertop[0]; var sel=selectedProducts.indexOf('ss_'+k.model)>=0;
     var rg=document.createElement('div'); rg.className='ks-results-grid';
-    var card=document.createElement('div'); card.className='ks-result'+(sel?' selected':'');
-    var chk=document.createElement('div'); chk.className='ks-result-check'; chk.textContent='\u2713'; card.appendChild(chk);
-    var ri=document.createElement('div'); ri.className='ks-result-img';
-    var img=document.createElement('img'); img.src=k.img; img.alt=k.model;
-    img.style.cssText='width:100%;height:100%;object-fit:contain;padding:12px';
-    img.onerror=function(){ ri.innerHTML='<span style="font-size:36px;opacity:.3">\ud83c\udf73</span>'; };
-    ri.appendChild(img); card.appendChild(ri);
-    var rb=document.createElement('div'); rb.className='ks-result-body';
-    var rm=document.createElement('div'); rm.className='ks-result-model'; rm.textContent=k.name; rb.appendChild(rm);
-    var rs=document.createElement('div'); rs.className='ks-result-spec'; rs.textContent='Electric  \u00b7  10 gal  \u00b7  Countertop Tilting'; rb.appendChild(rs);
-    var ra=document.createElement('div'); ra.className='ks-result-actions';
-    var addBtn=document.createElement('button'); addBtn.className='ks-add-btn';
-    addBtn.textContent=sel?'\u2713 Added to Quote':'+ Add to Quote';
-    addBtn.onclick=(function(model){ return function(){
-      var id='ss_'+model; var i=selectedProducts.indexOf(id);
-      if(i>=0) selectedProducts.splice(i,1); else selectedProducts.push(id);
-      updateSummary(); _renderSkilletSelector();
-    }; })(k.model); ra.appendChild(addBtn);
-    var vb=document.createElement('a'); vb.className='ks-view-btn'; vb.href=k.url; vb.target='_blank'; vb.textContent='View \u2192'; ra.appendChild(vb);
-    rb.appendChild(ra); card.appendChild(rb); rg.appendChild(card); wrap.appendChild(rg);
+    SKILLET_DB.countertop.forEach(function(k){
+      var sel=selectedProducts.indexOf('ss_'+k.model)>=0;
+      var card=document.createElement('div'); card.className='ks-result'+(sel?' selected':'');
+      var chk=document.createElement('div'); chk.className='ks-result-check'; chk.textContent='✓'; card.appendChild(chk);
+      var ri=document.createElement('div'); ri.className='ks-result-img';
+      var img=document.createElement('img'); img.src=k.img; img.alt=k.model;
+      img.style.cssText='width:100%;height:100%;object-fit:contain;padding:12px';
+      img.onerror=function(){ ri.innerHTML='<span style="font-size:36px;opacity:.3">&#127859;</span>'; };
+      ri.appendChild(img); card.appendChild(ri);
+      var rb=document.createElement('div'); rb.className='ks-result-body';
+      var rm=document.createElement('div'); rm.className='ks-result-model'; rm.textContent=k.name; rb.appendChild(rm);
+      var rs=document.createElement('div'); rs.className='ks-result-spec';
+      rs.textContent='Electric  ·  '+k.gal+' gal  ·  Countertop Tilting'; rb.appendChild(rs);
+      var ra=document.createElement('div'); ra.className='ks-result-actions';
+      var addBtn=document.createElement('button'); addBtn.className='ks-add-btn';
+      addBtn.textContent=sel?'✓ Added to Quote':'+ Add to Quote';
+      addBtn.onclick=(function(model){ return function(){
+        var id='ss_'+model; var i=selectedProducts.indexOf(id);
+        if(i>=0) selectedProducts.splice(i,1); else selectedProducts.push(id);
+        updateSummary(); _renderSkilletSelector();
+      }; })(k.model); ra.appendChild(addBtn);
+      var vb=document.createElement('a'); vb.className='ks-view-btn'; vb.href=k.url; vb.target='_blank'; vb.textContent='View →'; ra.appendChild(vb);
+      rb.appendChild(ra); card.appendChild(rb); rg.appendChild(card);
+    });
+    wrap.appendChild(rg);
     document.getElementById('products-grid').parentElement.appendChild(wrap);
     return;
   }
@@ -1295,6 +1332,7 @@ function _renderSkilletSelector() {
       rb.appendChild(ra); card.appendChild(rb); rg2.appendChild(card);
     });
     rdiv.appendChild(rg2);
+    if(byGal.length > 6){ var ssh=document.createElement('div'); ssh.style.cssText='text-align:center;font-size:10px;color:var(--muted);padding:6px 0 2px;letter-spacing:.06em;text-transform:uppercase'; ssh.textContent='▾  Scroll to see all '+byGal.length+' models  ▾'; rdiv.appendChild(ssh); }
   }
   wrap.appendChild(rdiv);
   document.getElementById('products-grid').parentElement.appendChild(wrap);
@@ -1463,6 +1501,7 @@ function _renderKettleSelector() {
       rb.appendChild(ra); card.appendChild(rb); rg.appendChild(card);
     });
     rdiv.appendChild(rg);
+    if(byGal.length > 6){ var ksh=document.createElement('div'); ksh.style.cssText='text-align:center;font-size:10px;color:var(--muted);padding:6px 0 2px;letter-spacing:.06em;text-transform:uppercase'; ksh.textContent='▾  Scroll to see all '+byGal.length+' models  ▾'; rdiv.appendChild(ksh); }
   }
   wrap.appendChild(rdiv);
 
