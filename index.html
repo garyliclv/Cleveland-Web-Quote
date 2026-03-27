@@ -787,11 +787,6 @@ function _renderSteamerFilter() {
     lnk.onclick = function(e){ e.stopPropagation(); }; ra1.appendChild(lnk);
     body.appendChild(ra1); card.appendChild(body);
 
-    card.onclick = (function(id){ return function(){
-      var i = selectedProducts.indexOf(id);
-      if(i>=0) selectedProducts.splice(i,1); else selectedProducts.push(id);
-      updateSummary(); _renderSteamerFilter();
-    }; })(p.id);
     grid.appendChild(card);
   });
 
@@ -879,12 +874,6 @@ function renderGrid(list) {
     lnk.onclick = function(e){ e.stopPropagation(); }; ra2.appendChild(lnk);
     body.appendChild(ra2); card.appendChild(body);
 
-    card.onclick = (function(id){ return function(){
-      var i = selectedProducts.indexOf(id);
-      if(i>=0) selectedProducts.splice(i,1); else selectedProducts.push(id);
-      updateSummary();
-      if(currentSubKey) renderGrid(CATALOG[currentSubKey]||[]);
-    }; })(p.id);
     grid.appendChild(card);
   });
 
@@ -1063,12 +1052,6 @@ function treeSearch(q) {
     lnk.onclick=function(e){e.stopPropagation();}; ra3.appendChild(lnk);
     body.appendChild(ra3);
     card.appendChild(body);
-    card.onclick=(function(pid){ return function(){
-      var i=selectedProducts.indexOf(pid);
-      if(i>=0) selectedProducts.splice(i,1); else selectedProducts.push(pid);
-      updateSummary();
-      card.classList.toggle('selected',selectedProducts.indexOf(pid)>=0);
-    }; })(id);
     grid.appendChild(card);
   });
 }
