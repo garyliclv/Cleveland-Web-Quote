@@ -450,12 +450,12 @@ body{font-family:'Poppins',sans-serif;background:var(--off-white);color:var(--te
         </div>
       </div>
       <div class="form-grid">
-        <div class="field"><label>First name *</label><input type="text" id="f-fn" placeholder="First name"></div>
-        <div class="field"><label>Last name *</label><input type="text" id="f-ln" placeholder="Last name"></div>
-        <div class="field"><label>Email address *</label><input type="email" id="f-em" placeholder="you@company.com"></div>
-        <div class="field"><label>Phone</label><input type="tel" id="f-ph" placeholder="+1 (555) 000-0000"></div>
-        <div class="field"><label>Company / Facility *</label><input type="text" id="f-co" placeholder="Company or facility name"></div>
-        <div class="field"><label>City / State</label><input type="text" id="f-loc" placeholder="City, State / Province"></div>
+        <div class="field"><label>First name <span style="color:var(--red)">*</span></label><input type="text" id="f-fn" placeholder="First name"></div>
+        <div class="field"><label>Last name <span style="color:var(--red)">*</span></label><input type="text" id="f-ln" placeholder="Last name"></div>
+        <div class="field"><label>Email address <span style="color:var(--red)">*</span></label><input type="email" id="f-em" placeholder="you@company.com"></div>
+        <div class="field"><label>Phone <span style="color:var(--red)">*</span></label><input type="tel" id="f-ph" placeholder="+1 (555) 000-0000"></div>
+        <div class="field"><label>Company / Facility <span style="color:var(--red)">*</span></label><input type="text" id="f-co" placeholder="Company or facility name"></div>
+        <div class="field"><label>City / State <span style="color:var(--red)">*</span></label><input type="text" id="f-loc" placeholder="City, State / Province"></div>
         <div class="field"><label>Zip / Postal Code</label><input type="text" id="f-zip" placeholder="Zip or postal code"></div>
         <div class="field"><label>Operation type</label>
           <select id="f-op">
@@ -504,7 +504,7 @@ body{font-family:'Poppins',sans-serif;background:var(--off-white);color:var(--te
     <div class="form-body">
       <div class="form-grid">
         <div class="field form-full">
-          <label>What are you looking for? *</label>
+          <label>What are you looking for? <span style="color:var(--red)">*</span></label>
           <textarea id="f-req" placeholder="Describe the product, model number, capacity, quantity, or application. The more detail the better..."></textarea>
         </div>
         <div class="field form-full">
@@ -933,8 +933,10 @@ function doSubmit(){
   var ln=document.getElementById('f-ln').value.trim();
   var em=document.getElementById('f-em').value.trim();
   var co=document.getElementById('f-co').value.trim();
+  var ph=document.getElementById('f-ph').value.trim();
+  var loc=document.getElementById('f-loc').value.trim();
   var req=document.getElementById('f-req').value.trim();
-  if(!fn||!ln||!em||!co||!req){alert('Please fill in your name, email, company, and describe what you need.');return;}
+  if(!fn||!ln||!em||!co||!ph||!loc||!req){alert('Please fill in all required fields: name, email, company, phone, city/state, and describe what you need.');return;}
 
   var btn=document.getElementById('sub-btn');
   btn.disabled=true; btn.textContent='Sending\u2026';
